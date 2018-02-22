@@ -47,7 +47,7 @@ SERVER_URL=https://netvm.inetgrid.net
 
 echo "[+] Contacting Server API."
 PUBLIC_KEY=$(wg pubkey <<<"$PRIVATE_KEY")
-RESPONSE=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username":"'$USERNAME'","pubkey":"'$PUBLIC_KEY'"}' $SERVER_URL/peer | python -c "import sys, json;\ntry:\n    print json.load(sys.stdin)['ip_address']\nexcept ValueError:\n    print ('{}')")
+RESPONSE=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username":"'$USERNAME'","pubkey":"'$PUBLIC_KEY'"}' $SERVER_URL/peer | python -c "import sys, json;\ntry:\n    print json.load(sys.stdin)['ip_address']\nexcept ValueError:\n    print '{}'")
 [[ $RESPONSE =~ ^[0-9a-f:/.,]+$ ]] || die "$RESPONSE"
 ADDRESS="$(dec2ip $RESPONSE)"
 DNS="193.138.219.228"
