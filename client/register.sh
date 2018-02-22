@@ -69,7 +69,5 @@ cat > "$CONFIGURATION_FILE.tmp" <<-_EOF
 	_EOF
 mv "$CONFIGURATION_FILE.tmp" "$CONFIGURATION_FILE"
 
-
 echo "[+] Success. The following commands may be run for connecting:"
 echo "  \$ wg-quick up wireguard-web"
-done
