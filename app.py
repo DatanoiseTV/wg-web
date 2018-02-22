@@ -71,7 +71,7 @@ def add_peer():
     reg_ip_address = int(ipaddress.IPv4Address(str(request.remote_addr)))
     new_peer = Peer(username, pubkey, reg_ip_address)
 
-    if(not re.match('[a-zA-Z0-9+/]{43}=', pubkey)):
+    if(not re.match("[a-zA-Z0-9+/]{43}=", pubkey)):
         return StatusResponse(100, "Not a valid key")
 
     try:
