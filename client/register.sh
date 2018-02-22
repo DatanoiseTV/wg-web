@@ -28,9 +28,12 @@ read -p "[?] Please enter a username to identify you in the future: " -r USERNAM
 
 shopt -s nocasematch
 CONFIGURATION_FILE="/etc/wireguard/wireguard-web.conf"
-while read -r line; do
-	[[ $line =~ ^PrivateKey\ *=\ *([a-zA-Z0-9+/]{43}=)\ *$ ]] && PRIVATE_KEY="${BASH_REMATCH[1]}" && break
-done < "$CONFIGURATION_FILE"
+
+if [[ -f $CONFIGURATION_FILE]]; then
+  while read -r line; do
+  	[[ $line =~ ^PrivateKey\ *=\ *([a-zA-Z0-9+/]{43}=)\ *$ ]] && PRIVATE_KEY="${BASH_REMATCH[1]}" && break
+  done < "$CONFIGURATION_FILE"
+done
 [[ -n $PRIVATE_KEY ]] && echo "[+] Using existing private key."
 shopt -u nocasematch
 
