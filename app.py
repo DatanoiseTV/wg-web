@@ -78,6 +78,7 @@ def add_peer():
         db.session.add(new_peer)
         db.session.commit()
     except sqlalchemy.exc.IntegrityError:
+        echo "Duplicate key"
         return StatusResponse(101, "Duplicate key")
 
     # Refresh object after creating to fetch PK
