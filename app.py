@@ -4,6 +4,9 @@ from flask import session, redirect, url_for, escape, request, g, render_templat
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 import sqlalchemy
 import os
 
@@ -15,12 +18,19 @@ import datetime, time
 from werkzeug.routing import BaseConverter
 
 app = Flask(__name__)
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' +\
                                          os.path.join(basedir, 'peers.sqlite')
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["1440 per day", "60 per hour"]
+)
 
 class RegexConverter(BaseConverter):
     def __init__(self, url_map, *items):
@@ -66,6 +76,7 @@ def IDtoIP(id):
 
 # endpoint to add new peer
 @app.route("/peer", methods=["POST"])
+@limiter.limit("30 per hour")
 def add_peer():
     username = request.json['username']
     pubkey = request.json['pubkey']
