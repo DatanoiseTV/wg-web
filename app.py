@@ -116,6 +116,15 @@ def get_peer():
     result = peers_schema.dump(all_peers).data
     return jsonify(result)
 
+# Show all peers pretty
+@app.route("/peers/pretty", methods=["GET"])
+def get_peer_pretty():
+    all_peers = Peer.query.all()
+    resp = make_response(render_template('peers_pretty.html',\
+                         peers=peers_schema.dump(all_peers).data))
+    resp.headers['Content-type'] = 'text/html; charset=utf-8'
+    return resp
+
 # endpoint to get peer detail by id
 #@app.route("/peer/<id>", methods=["GET"])
 #def peer_detail(id):

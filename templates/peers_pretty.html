@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+ <head>
+ <meta charset="utf-8">
+ <title>jQuery.ajax()</title>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+ </head>
+ <body class="col-md-12">
+ <h1>Wireguard Peer List</h1>
+ <div id="display-resources">
+ <p>Click the refresh button to load the current peer lists and to be able to set trust.</p>
+ </div>
+ <a href="#" class="btn btn-primary" id="retrieve-resources">Retrieve List</a>
+ <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+ <script>
+
+ function num2dot(num)
+ {
+     var d = num%256;
+     for (var i = 3; i > 0; i--)
+     {
+         num = Math.floor(num/256);
+         d = num%256 + '.' + d;
+     }
+     return d;
+ }
+
+ $(document).ready(function () {
+
+  $('#retrieve-resources').click(function () {
+  var displayResources = $('#display-resources');
+
+  displayResources.text('Loading data from JSON source...');
+
+  $.ajax({
+  type: "GET",
+  url: "/peers",
+  success: function(result)
+  {
+  console.log(result);
+  var output="<table><thead><tr><th>Username</th><th>IP-Address</th><th>Public Key</th><th>Is trusted?</th></thead><tbody>";
+  for (var i in result)
+  {
+  output+="<tr><td>" + result[i].username + "</td><td>" + num2dot(result[i].ip_address) + "</td><td>" + result[i].pubkey + "</td><td>" + result[i].is_trusted + "</td></tr>";
+  }
+  output+="</tbody></table>";
+
+  displayResources.html(output);
+  $("table").addClass("table");
+  }
+  });
+
+  });
+ });
+
+ </script>
+
+ </body>
+</html>
