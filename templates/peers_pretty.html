@@ -11,10 +11,11 @@
   <div id="display-resources">
     <p>Click the refresh button to load the current peer lists and to be able to set trust.</p>
   </div>
-  <a href="#" class="btn btn-primary" id="retrieve-resources">Retrieve List</a>
+  <a href="#" class="btn btn-primary" id="retrieve-resources">Update Peer List</a>
   <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script>
 
+  // This converts the decimal IP to a 4 octet representation.
   function num2dot(num)
   {
     var d = num%256;
@@ -42,7 +43,7 @@
       }
     });
   }
-  
+
   function updateList()
   {
     var displayResources = $('#display-resources');
@@ -72,7 +73,7 @@
   }
 
   $(document).ready(function () {
-
+    updateList();
     $('#retrieve-resources').click(function () {
       updateList();
     });
