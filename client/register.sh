@@ -86,7 +86,7 @@ cat > "$CONFIGURATION_FILE.tmp" <<-_EOF
 	[Peer]
 	PublicKey = fJy6mFqLtRwtRD1dy2GxuYROPIy73mmE5kxzyT3ATDw=
 	Endpoint = 159.89.111.118:500
-	AllowedIPs = 0.0.0.0/0, ::/0
+	AllowedIPs = 10.42.0.0/16
 	_EOF
 mv "$CONFIGURATION_FILE.tmp" "$CONFIGURATION_FILE"
 
