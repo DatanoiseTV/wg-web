@@ -39,3 +39,7 @@ Just run ```bash client/register.sh``` and follow instructions.
 * URL: /peer/<pubkey>/trust
 * METHOD: POST
 * DATA: { "is_trusted": state} where state can be 0 or 1.
+
+### Delete a single peer
+* URL: /peer/<pubkey>/delete
+* METHOD: POST
