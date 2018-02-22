@@ -13,14 +13,14 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * wireguard package installed
 * curl package installed
 * Python3 installed
-* pip3 install -r requirements.txt (on server side)
+* ```pip3 install -r requirements.txt``` (on server side)
 
 ## Server-side installation (TBD)
-* Install Python3 (apt install python3)
+* Install Python3 ```apt install python3```
 * Go to checkout directory
-* Enter venv (python3 -mvenv venv && source venv/bin/activate)
-* Install requirements (pip install -r requirements.txt)
-* Enter interactive shell (FLASK_APP=app.py flask shell)
+* Enter venv ```python3 -mvenv venv && source venv/bin/activate```
+* Install requirements ```pip install -r requirements.txt```
+* Enter interactive shell ```FLASK_APP=app.py flask shell```
 * Enter ```from app import db; db.create_all()```
 * Exit interactive shell with Ctrl+D
 * Run app by typing ```python3 app.py``` or ```FLASK_APP=app.py run```
@@ -28,7 +28,7 @@ as it might end up in data loss or worse. This is provided without any warranty.
 
 
 ## Client side execution
-* Install jq and curl (apt install jq curl)
+* Install jq and curl ```apt install jq curl```
 * Run client and follow steps ```bash client/register.sh```
 
 ## URLs
@@ -47,7 +47,7 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * Method: GET
 
 ### Return single peer by pubkey
-* URL: /peer/<pubkey>
+* URL: /peer/PUBKEY
 
 ### Return Wireguard-compliant config for all peers
 * URL: /peers/config
