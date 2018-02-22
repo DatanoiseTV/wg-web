@@ -51,6 +51,21 @@
     });
   }
 
+  function deletePeer(sender)
+  {
+    var pubkey = $(sender).data('pubkey');
+    $.ajax({
+      type: 'POST',
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      url: "/peer/"+ pubkey +"/delete",
+      success: function(result)
+      {
+        updateList();
+      }
+    });
+  }
+
   function updateList()
   {
     var displayResources = $('#display-resources');
@@ -63,11 +78,16 @@
       success: function(result)
       {
         console.log(result);
-        var output="<table><thead><tr><th>Username</th><th>Date created</th><th>IP-Address</th><th>Registration IP-Address</th><th>Public Key</th><th>Is trusted?</th></thead><tbody>";
+        var output="<table><thead><tr><th>Username</th><th>Date created</th><th>IP-Address</th><th>Registration IP-Address</th><th>Public Key</th><th>Is trusted?</th><th>Delete</th></thead><tbody>";
         for (var i in result)
         {
           var pubkey = result[i].pubkey;
-          output+="<tr><td>" + result[i].username + "</td><td>" + toDateTime(result[i].date_created) + "</td><td>" + num2dot(result[i].ip_address) + "</td><td>" + num2dot(result[i].reg_ip_address) + "</td><td id=\”pubkey\">" + pubkey + '</td><td><a onclick="updateTrust(this)" data-pubkey="' + pubkey + '" data-state=' + result[i].is_trusted + ' href="#">' + result[i].is_trusted + "</a></td></tr>";
+          output+="<tr><td>" + result[i].username + "</td><td>" + toDateTime(result[i].date_created) + "</td><td>" + num2dot(result[i].ip_address) + "</td>"
+          output+="<td>" + num2dot(result[i].reg_ip_address) + "</td>"
+          output+="<td id=\”pubkey\">" + pubkey + "</td>"
+          output+='<td><a onclick="updateTrust(this)" data-pubkey="' + pubkey + '" data-state=' + result[i].is_trusted + ' href="#">' + result[i].is_trusted + "</a></td>"
+          output+='<td><a onclick="deletePeer(this)" data-pubkey="' + pubkey + '" data-state=' + result[i].is_trusted + ' href="#">' + "Delete</a></td>"
+          output+="</tr>";
         }
         output+="</tbody></table>";
 
