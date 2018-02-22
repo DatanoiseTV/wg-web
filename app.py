@@ -121,7 +121,8 @@ def peer_detail_pubkey(key):
 def peer_update(id):
     peer = Peer.query.get(id)
     is_trusted = request.json['is_trusted']
-
+    if(not is_trusted in [0, 1]):
+        return StatusResponse(102, "Not a valid value for trust")
     peer.is_trusted = is_trusted
 
     db.session.commit()
