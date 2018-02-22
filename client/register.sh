@@ -12,6 +12,18 @@ ARGS=( "$@" )
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 [[ $UID == 0 ]] || exec sudo -p "[?] $PROGRAM must be run as root. Please enter the password for %u to continue: " "$SELF" "${ARGS[@]}"
 
+dec2ip () {
+    local ip dec=$@
+    for e in {3..0}
+    do
+        ((octet = dec / (256 ** e) ))
+        ((dec -= octet * 256 ** e))
+        ip+=$delim$octet
+        delim=.
+    done
+    printf '%s\n' "$ip"
+}
+
 read -p "[?] Please enter a username to identify you in the future: " -r USERNAME
 
 shopt -s nocasematch
@@ -31,9 +43,10 @@ fi
 SERVER_URL=https://netvm.inetgrid.net
 
 echo "[+] Contacting Mullvad API."
-RESPONSE="$(curl -H "Content-Type: application/json" -X POST -d '{"username":"$USERNAME","pubkey":"$(wg pubkey <<<"$PRIVATE_KEY")"} $SERVER_URL/peer' || die "Could not talk to Server."
+RESPONSE="$(curl -H "Content-Type: application/json" -X POST -d '{"username":"$USERNAME","pubkey":"$(wg pubkey <<<"$PRIVATE_KEY")"} $SERVER_URL/peer' | python -c "import sys, json; print json.load(sys.stdin)['ip_address']"
+ || die "Could not talk to Server."
 [[ $RESPONSE =~ ^[0-9a-f:/.,]+$ ]] || die "$RESPONSE"
-ADDRESS="$RESPONSE"
+ADDRESS="$(dec2ip $RESPONSE)"
 DNS="193.138.219.228"
 
 echo "[+] Writing WriteGuard configuration files."
