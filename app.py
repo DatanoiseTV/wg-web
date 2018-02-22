@@ -110,7 +110,8 @@ def get_peer():
 #    return peer_schema.jsonify(peer)
 
 # endpoint to get peer detail by pubkey
-@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>', methods=["GET"])
+
+@app.route('/peer/<regex("[a-zA-Z0-9+\/]{43}="):key>', methods=["GET"])
 def peer_detail_pubkey(key):
     print (key)
     peer = Peer.query.filter_by(pubkey=key).first()
