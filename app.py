@@ -153,5 +153,13 @@ def peer_update(key):
     db.session.commit()
     return peer_schema.jsonify(peer)
 
+# endpoint to update peer trust
+@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
+def peer_delete(key):
+    peer = Peer.query.filter_by(pubkey=key).first()
+    db.session.delete(peer)
+    db.session.commit()
+    return peer_schema.jsonify(peer)
+
 if __name__ == '__main__':
     app.run(debug=True)
