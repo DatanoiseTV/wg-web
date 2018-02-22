@@ -86,6 +86,9 @@ def add_peer():
     if(not re.match("[a-zA-Z0-9+/]{43}=", pubkey)):
         return StatusResponse(100, "Not a valid key")
 
+    if(not re.match("^[a-zA-Z0-9_]+$", username)):
+        return StatusResponse(100, "Not a valid username (only alphanumeric characters)")
+
     try:
         db.session.add(new_peer)
         db.session.commit()
