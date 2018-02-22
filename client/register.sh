@@ -10,7 +10,15 @@ die() {
 ROGRAM="${0##*/}"
 ARGS=( "$@" )
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
+
+if [ "$dist" != "Ubuntu" ]; then
+  echo "Only Ubuntu is currently supported, sorry."
+  exit 1
+fi
+
 [[ $UID == 0 ]] || exec sudo -p "[?] $PROGRAM must be run as root. Please enter the password for %u to continue: " "$SELF" "${ARGS[@]}"
+
+dist=`grep DISTRIB_ID /etc/*-release | awk -F '=' '{print $2}'`
 
 dec2ip () {
     local ip dec=$@
