@@ -139,9 +139,9 @@ def peer_detail_pubkey(key):
     return peer_schema.jsonify(peer)
 
 # endpoint to update peer trust
-@app.route("/peer/<id>", methods=["PUT"])
-def peer_update(id):
-    peer = Peer.query.get(id)
+@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/trust', methods=["POST"])
+def peer_update(key):
+    peer = Peer.query.filter_by(pubkey=key).first()
     is_trusted = request.json['is_trusted']
     if(not is_trusted in [0, 1]):
         return StatusResponse(102, "Not a valid value for trust")
