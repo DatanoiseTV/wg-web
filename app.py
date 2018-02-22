@@ -16,6 +16,7 @@ from werkzeug.routing import BaseConverter
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
+app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' +\
                                          os.path.join(basedir, 'peers.sqlite')
 db = SQLAlchemy(app)
