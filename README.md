@@ -25,6 +25,10 @@ Just run ```bash client/register.sh``` and follow instructions.
 * URL: /peers
 * Method: GET
 
+### User listing with JS UI with trust management
+* URL: /peers/pretty
+* Method: GET
+
 ### Return single peer by pubkey
 * URL: /peer/<pubkey>
 
