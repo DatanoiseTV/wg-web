@@ -34,6 +34,7 @@ if [[ -f $CONFIGURATION_FILE ]]; then
   	[[ $line =~ ^PrivateKey\ *=\ *([a-zA-Z0-9+/]{43}=)\ *$ ]] && PRIVATE_KEY="${BASH_REMATCH[1]}" && break
   done < "$CONFIGURATION_FILE"
 fi
+
 [[ -n $PRIVATE_KEY ]] && echo "[+] Using existing private key."
 shopt -u nocasematch
 
@@ -46,7 +47,7 @@ SERVER_URL=https://netvm.inetgrid.net
 
 echo "[+] Contacting Server API."
 PUBLIC_KEY=$(wg pubkey <<<"$PRIVATE_KEY")
-RESPONSE=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username":"'$USERNAME'","pubkey":"'$PUBKEY'"}' $SERVER_URL/peer | python -c "import sys, json; print json.load(sys.stdin)['ip_address']")
+RESPONSE=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username":"'$USERNAME'","pubkey":"'$PUBLIC_KEY'"}' $SERVER_URL/peer | python -c "import sys, json; print json.load(sys.stdin)['ip_address']")
 [[ $RESPONSE =~ ^[0-9a-f:/.,]+$ ]] || die "$RESPONSE"
 ADDRESS="$(dec2ip $RESPONSE)"
 DNS="193.138.219.228"
