@@ -31,7 +31,6 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * Install jq and curl (apt install jq curl)
 * Run client and follow steps ```bash client/register.sh```
 
-
 ## URLs
 
 ### Create/add new peer:
@@ -54,10 +53,10 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * URL: /peers/config
 
 ### Trust / untrust a single peer
-* URL: /peer/<pubkey>/trust
+* URL: /peer/PUBKEY/trust
 * METHOD: POST
 * DATA: { "is_trusted": state} where state can be 0 or 1.
 
 ### Delete a single peer
-* URL: /peer/<pubkey>/delete
+* URL: /peer/PUBKEY/delete
 * METHOD: POST
