@@ -43,7 +43,7 @@ fi
 SERVER_URL=https://netvm.inetgrid.net
 
 echo "[+] Contacting Mullvad API."
-RESPONSE="$(curl -H "Content-Type: application/json" -X POST -d '{"username":"$USERNAME","pubkey":"$(wg pubkey <<<"$PRIVATE_KEY")"} $SERVER_URL/peer' | python -c "import sys, json; print json.load(sys.stdin)['ip_address'])"
+RESPONSE="$(curl -H "Content-Type: application/json" -X POST -d '{"username":"$USERNAME","pubkey":"'$(wg pubkey <<<"$PRIVATE_KEY")'"} $SERVER_URL/peer' | python -c "import sys, json; print json.load(sys.stdin)['ip_address'])"
  || die "Could not talk to Server."
 [[ $RESPONSE =~ ^[0-9a-f:/.,]+$ ]] || die "$RESPONSE"
 ADDRESS="$(dec2ip $RESPONSE)"
