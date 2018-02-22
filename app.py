@@ -138,13 +138,13 @@ def get_peer_pretty():
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>', methods=["GET"])
 def peer_detail_pubkey(key):
     print (key)
-    peer = Peer.query.filter_by(pubkey=key).first()
+    peer = Peer.query.filter_by(pubkey=key).first_or_404()
     return peer_schema.jsonify(peer)
 
 # endpoint to update peer trust
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/trust', methods=["POST"])
 def peer_update(key):
-    peer = Peer.query.filter_by(pubkey=key).first()
+    peer = Peer.query.filter_by(pubkey=key).first_or_404()
     is_trusted = request.json['is_trusted']
     if(not is_trusted in [0, 1]):
         return StatusResponse(102, "Not a valid value for trust")
@@ -156,7 +156,7 @@ def peer_update(key):
 # endpoint to update peer trust
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
 def peer_delete(key):
-    peer = Peer.query.filter_by(pubkey=key).first()
+    peer = Peer.query.filter_by(pubkey=key).first_or_404()
     db.session.delete(peer)
     db.session.commit()
     return peer_schema.jsonify(peer)
