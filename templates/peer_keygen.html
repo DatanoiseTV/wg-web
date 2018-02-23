@@ -26,26 +26,9 @@
  * Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
-function sendPubkeyToServer(pubkey, username, password)
-{
-	alert("Sending " + username + ":" + password + " to server for new pubkey " + pubkey + "...");
-
-	// send info to server
-
-	var serverResponse = {
-		publicKey: "6spHEFoJrp9pijbxjJoS6fHjZaAWQqtdFFO/OtpVe3w=",
-		allowedIPs: [ "0.0.0.0/0", "::/0" ],
-		endpoint: "demo.wireguard.com:63321",
-		address: [ "192.168.18.42/32", "fd08:1234:1111::77/128" ],
-		dns: [ "8.8.8.8", "8.8.4.4" ]
-	}
-
-	return serverResponse;
-}
-
 function submitToServer(sender)
 {
-	var keypair = WireGuard.generateKeypair();
+	let keypair = WireGuard.generateKeypair();
 	//var serverResponse = sendPubkeyToServer(keypair.publicKey, "zx2c4", "supersecretpassword");
 
   $.ajax({
