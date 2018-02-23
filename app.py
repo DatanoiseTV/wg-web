@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, re
+import os, sys, re
 
 from flask import Flask, request, jsonify, session, redirect, abort,\
                   url_for, escape, request, g, render_template, make_response, flash
@@ -94,6 +94,29 @@ class PeerSchema(ma.ModelSchema):
 
 peer_schema = PeerSchema()
 peers_schema = PeerSchema(many=True)
+
+######## Flask CLI functions ########
+
+# Run flask add_user to add user interactively from CLI.
+@app.cli.command()
+def add_user():
+    username = input("Username: ")
+    if(not re.match("^[a-zA-Z0-9_]+$", username)):
+        print("Sorry, invalid username (only alphanumeric characters")
+        sys.exit(1)
+    password = input("Password: ")
+    if username is None or password is None:
+        print("Sorry, empty username or password.")
+        sys.exit(1)
+    if User.query.filter_by(username = username).first() is not None:
+        print("Sorry, this user already exists.")
+        sys.exit(1)
+    user = User(username = username)
+    user.hash_password(password)
+    db.session.add(user)
+    db.session.commit()
+    print("Thanks, successfully added '%s' to users." %(username))
+    sys.exit(0)
 
 ######## Helper functions ########
 def StatusResponse(statuscode, msg):
