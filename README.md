@@ -31,6 +31,12 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * Install jq and curl ```apt install jq curl```
 * Run client and follow steps ```bash client/register.sh```
 
+## Registering a new user (for admin / server)
+* In wg-app folder, run ```FLASK_APP=app.py flask add_user``` and follow instructions.
+Afterwards this login(s) will work for the basic authentication.
+
+In case you want to use this with cURL, the URL will be user:pass@url.
+
 ## URLs
 
 ### Create/add new peer:
