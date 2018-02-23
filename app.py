@@ -17,7 +17,7 @@ import sqlalchemy
 import ipaddress
 import datetime, time
 
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import argon2
 
 app = Flask(__name__)
 
@@ -53,10 +53,10 @@ class User(db.Model):
     hash = db.Column(db.String(100), unique=False)
 
     def hash_password(self, password):
-        self.hash = pbkdf2_sha256.hash(password)
+        self.hash = argon2.hash(password)
 
     def verify_password(self, password):
-        return pbkdf2_sha256.verify(password, self.hash)
+        return argon2.verify(password, self.hash)
 
 @auth.verify_password
 def verify_password(username, password):
