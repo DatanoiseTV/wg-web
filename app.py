@@ -157,6 +157,15 @@ def add_peer():
 
     return peer_schema.jsonify(new_peer)
 
+# Add peer using keygen in browser
+@app.route("/peer/keygen", methods=["GET"])
+def add_peer_keygen():
+    all_peers = Peer.query.all()
+    resp = make_response(render_template('peer_keygen.html',\
+                         peers=peers_schema.dump(all_peers).data))
+    resp.headers['Content-type'] = 'text/html; charset=utf-8'
+    return resp
+
 # Generated config for Wireguard
 @app.route("/peers/config", methods=["GET"])
 @auth.login_required
