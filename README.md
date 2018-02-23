@@ -37,26 +37,39 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * URL: /peer
 * Method: POST
 * Parameters: username, pubkey
+* Authenticated: no
 
 ### Return all users as JSON
 * URL: /peers
 * Method: GET
+* Authenticated: yes, basic auth
 
 ### User listing with JS UI with trust management
 * URL: /peers/pretty
 * Method: GET
+* Authenticated: yes, basic auth
 
 ### Return single peer by pubkey
 * URL: /peer/PUBKEY
+* Authenticated: yes, basic auth
 
 ### Return Wireguard-compliant config for all peers
 * URL: /peers/config
+* Authenticated: yes, basic auth
 
 ### Trust / untrust a single peer
 * URL: /peer/PUBKEY/trust
 * METHOD: POST
 * DATA: { "is_trusted": state} where state can be 0 or 1.
+* Authenticated: yes, basic auth
 
 ### Delete a single peer
 * URL: /peer/PUBKEY/delete
 * METHOD: POST
+* Authenticated: yes, basic auth
+
+### Create/add new user:
+* URL: /api/users
+* Method: POST
+* Parameters: username, password
+* Authenticated: no
