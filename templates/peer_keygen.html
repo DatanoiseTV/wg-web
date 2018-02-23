@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Key generator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body class="col-md-12">
+  <h1>Wireguard Key Generator</h1>
+  <div id="display-resources">
+    <p></p>
+  </div>
+
+  <form id="myForm" action="javascript:submitToServer(this)" method="post">
+     Username: <input type="text" id="username" />
+     <input type="submit" value="Generate Key and submit to server" />
+ </form>
+
+  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script src="/static/js/wireguard.js"></script>
+<script>
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+ */
+
+function sendPubkeyToServer(pubkey, username, password)
+{
+	alert("Sending " + username + ":" + password + " to server for new pubkey " + pubkey + "...");
+
+	// send info to server
+
+	var serverResponse = {
+		publicKey: "6spHEFoJrp9pijbxjJoS6fHjZaAWQqtdFFO/OtpVe3w=",
+		allowedIPs: [ "0.0.0.0/0", "::/0" ],
+		endpoint: "demo.wireguard.com:63321",
+		address: [ "192.168.18.42/32", "fd08:1234:1111::77/128" ],
+		dns: [ "8.8.8.8", "8.8.4.4" ]
+	}
+
+	return serverResponse;
+}
+
+function submitToServer(sender)
+{
+	var keypair = WireGuard.generateKeypair();
+	//var serverResponse = sendPubkeyToServer(keypair.publicKey, "zx2c4", "supersecretpassword");
+
+  $.ajax({
+    type: 'POST',
+    data: JSON.stringify({ "pubkey": keypair.publicKey, "username": document.getElementById("username").value}),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    url: "/peer",
+    success: function(result)
+    {
+      console.log("Submission successful. Private key = " + keypair.privateKey)
+      var config = [];
+    	config.push("[Interface]");
+    	config.push("PrivateKey = " + keypair.privateKey);
+    	/*config.push("Address = " + serverResponse.address.join(", "));
+    	config.push("DNS = " + serverResponse.dns.join(", "));
+    	config.push("");
+    	config.push("[Peer]");
+    	config.push("PublicKey = " + serverResponse.publicKey);
+    	config.push("AllowedIPs = " + serverResponse.allowedIPs.join(", "));
+    	config.push("Endpoint = " + serverResponse.endpoint);
+    	config.push("");
+      */
+    	config = config.join("\n");
+
+    	var blob = new Blob([config], { type: "text/plain" });
+    	var a = document.createElement("a");
+    	a.download = "wireguard-web.conf";
+    	a.href = URL.createObjectURL(blob);
+    	a.style.display = "none";
+    	document.body.appendChild(a);
+    	a.click();
+    	document.body.removeChild(a);
+    }
+  });
+
+}
+</script>
+
+</body>
+</html>
