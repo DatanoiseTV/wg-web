@@ -16,8 +16,8 @@ import sqlalchemy
 
 import ipaddress
 import datetime, time
-
 from passlib.hash import argon2
+
 
 app = Flask(__name__)
 
@@ -25,6 +25,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' +\
                                          os.path.join(basedir, 'peers.sqlite')
+
+###### USER SETTINGS ######
+app.config['API_SERVER_URL'] = 'https://netvm.inetgrid.net'
+app.config['WIREGUARD_SERVER_IP'] = '159.89.111.118'
+app.config['WIREGUARD_SERVER_PORT'] = 500
+app.config['WIREGUARD_SERVER_PUBKEY'] = 'fJy6mFqLtRwtRD1dy2GxuYROPIy73mmE5kxzyT3ATDw='
+
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 auth = HTTPBasicAuth()

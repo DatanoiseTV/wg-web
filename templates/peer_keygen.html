@@ -25,6 +25,16 @@
  *
  * Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
+ function num2dot(num)
+ {
+   var d = num%256;
+   for (var i = 3; i > 0; i--)
+   {
+     num = Math.floor(num/256);
+     d = num%256 + '.' + d;
+   }
+   return d;
+ }
 
 function submitToServer(sender)
 {
@@ -39,19 +49,20 @@ function submitToServer(sender)
     url: "/peer",
     success: function(result)
     {
+      console.log(result);
+      //var returnedData = JSON.parse(result);
       console.log("Submission successful. Private key = " + keypair.privateKey)
       var config = [];
     	config.push("[Interface]");
     	config.push("PrivateKey = " + keypair.privateKey);
-    	/*config.push("Address = " + serverResponse.address.join(", "));
-    	config.push("DNS = " + serverResponse.dns.join(", "));
+    	config.push("Address = " + num2dot(result.ip_address));
+    	//config.push("DNS = " + serverResponse.dns.join(", "));
     	config.push("");
     	config.push("[Peer]");
-    	config.push("PublicKey = " + serverResponse.publicKey);
-    	config.push("AllowedIPs = " + serverResponse.allowedIPs.join(", "));
-    	config.push("Endpoint = " + serverResponse.endpoint);
+    	config.push("PublicKey = " + "{{ config.WIREGUARD_SERVER_PUBKEY }}");
+    	config.push("Endpoint = " + "{{ config.WIREGUARD_SERVER_IP }}:{{ config.WIREGUARD_SERVER_PORT }}");
     	config.push("");
-      */
+
     	config = config.join("\n");
 
     	var blob = new Blob([config], { type: "text/plain" });
