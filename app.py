@@ -49,6 +49,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
 
+    allowed_num_peers = db.Column(db.Integer())
+    is_active = db.Column(db.Boolean, default=False)
+
     # PBKDF2 with Salt with SHA256 via hashlib
     hash = db.Column(db.String(100), unique=False)
 
@@ -64,6 +67,8 @@ def verify_password(username, password):
     user = User.query.filter_by(username=username).first()
     if not user or not user.verify_password(password):
         return False
+    if not user.is_active:
+        return False
     g.user = user
     return True
 
@@ -77,11 +82,14 @@ class Peer(db.Model):
     reg_ip_address = db.Column(db.Integer)
     is_trusted = db.Column(db.Boolean())
 
-    def __init__(self, username, pubkey, reg_ip_address):
+    created_by = db.Column(db.String(80))
+
+    def __init__(self, username, pubkey, reg_ip_address, created_by):
         self.username = username
         self.pubkey = pubkey
         self.reg_ip_address = reg_ip_address
         self.is_trusted = False
+        self.created_by = created_by
         self.date_created = int(time.mktime(datetime.datetime.now().timetuple()))
 
 # Peer schema for Marshmallow
@@ -111,7 +119,10 @@ def add_user():
     if User.query.filter_by(username = username).first() is not None:
         print("Sorry, this user already exists.")
         sys.exit(1)
+    num_peers = input("How many peers can this user add?: ")
     user = User(username = username)
+    user.allowed_num_peers = int(num_peers)
+    user.is_active = True
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
@@ -130,12 +141,14 @@ def IDtoIP(id):
 ######## Routes for Peer CRUD API ########
 # endpoint to add new peer
 @app.route("/peer", methods=["POST"])
+@auth.login_required
 @limiter.limit("30 per hour")
 def add_peer():
     username = request.json['username']
     pubkey = request.json['pubkey']
     reg_ip_address = int(ipaddress.IPv4Address(str(request.remote_addr)))
-    new_peer = Peer(username, pubkey, reg_ip_address)
+    created_by = auth.username()
+    new_peer = Peer(username, pubkey, reg_ip_address, created_by)
 
     if(not re.match("[a-zA-Z0-9+/]{43}=", pubkey)):
         return StatusResponse(100, "Not a valid key")
@@ -160,9 +173,7 @@ def add_peer():
 # Add peer using keygen in browser
 @app.route("/peer/keygen", methods=["GET"])
 def add_peer_keygen():
-    all_peers = Peer.query.all()
-    resp = make_response(render_template('peer_keygen.html',\
-                         peers=peers_schema.dump(all_peers).data))
+    resp = make_response(render_template('peer_keygen.html'))
     resp.headers['Content-type'] = 'text/html; charset=utf-8'
     return resp
 
@@ -176,11 +187,11 @@ def get_peer_config():
     resp.headers['Content-type'] = 'text/plain; charset=utf-8'
     return resp
 
-# Show all peers as JSON response
+# Show all peers of logged in user as JSON response
 @app.route("/peers", methods=["GET"])
 @auth.login_required
 def get_peer():
-    all_peers = Peer.query.all()
+    all_peers = Peer.query.filter_by(created_by=auth.username())
     result = peers_schema.dump(all_peers).data
     return jsonify(result)
 
@@ -188,7 +199,7 @@ def get_peer():
 @app.route("/peers/pretty", methods=["GET"])
 @auth.login_required
 def get_peer_pretty():
-    all_peers = Peer.query.all()
+    all_peers = Peer.query.filter_by(created_by=auth.username())
     resp = make_response(render_template('peers_pretty.html',\
                          peers=peers_schema.dump(all_peers).data))
     resp.headers['Content-type'] = 'text/html; charset=utf-8'
@@ -199,14 +210,14 @@ def get_peer_pretty():
 @auth.login_required
 def peer_detail_pubkey(key):
     print (key)
-    peer = Peer.query.filter_by(pubkey=key).first_or_404()
+    peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
     return peer_schema.jsonify(peer)
 
 # endpoint to update peer trust
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/trust', methods=["POST"])
 @auth.login_required
 def peer_update(key):
-    peer = Peer.query.filter_by(pubkey=key).first_or_404()
+    peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
     is_trusted = request.json['is_trusted']
     if(not is_trusted in [0, 1]):
         return StatusResponse(102, "Not a valid value for trust")
@@ -219,13 +230,14 @@ def peer_update(key):
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
 @auth.login_required
 def peer_delete(key):
-    peer = Peer.query.filter_by(pubkey=key).first_or_404()
+    peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
     db.session.delete(peer)
     db.session.commit()
     return peer_schema.jsonify(peer)
 
 ######## Routes for User handling ########
 
+# Creates an user which is inactive until activated
 @app.route('/api/users', methods=['POST'])
 def user_register():
     username = request.json.get('username')
