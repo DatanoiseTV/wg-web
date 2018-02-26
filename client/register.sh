@@ -64,7 +64,9 @@ if [[ -z $PRIVATE_KEY ]]; then
 	PRIVATE_KEY="$(wg genkey)"
 fi
 
-SERVER_URL=https://netvm.inetgrid.net
+if [[ -z $SERVER_URL ]]; then
+  SERVER_URL=https://netvm.inetgrid.net
+fi
 
 echo "[+] Contacting Server API."
 PUBLIC_KEY=$(wg pubkey <<<"$PRIVATE_KEY")
