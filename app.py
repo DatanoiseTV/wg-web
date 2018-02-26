@@ -144,6 +144,9 @@ def StatusResponse(statuscode, msg):
 def IDtoIP(id):
     return int(ipaddress.IPv4Address("10.42.%s.%s" %(divmod(id, 255)[0], id & 255)))
 
+# TBD (limit num peers per user)
+def AllowedToAddPeer(username):
+    return True
 
 ######## Routes for Peer CRUD API ########
 # endpoint to add new peer
@@ -162,6 +165,8 @@ def add_peer():
 
     if(not re.match("^[a-zA-Z0-9_]+$", username)):
         return StatusResponse(100, "Not a valid username (only alphanumeric characters)")
+
+    AllowedToAddPeer(created_by)
 
     try:
         db.session.add(new_peer)

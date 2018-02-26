@@ -1,21 +1,55 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Key generator</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-</head>
-<body class="col-md-12">
-  <h1>Wireguard Key Generator</h1>
+{% extends "base.html" %}
+{% block body %}
   <div id="display-resources">
     <p></p>
   </div>
 
-  <form id="myForm" action="javascript:submitToServer(this)" method="post">
-     Username: <input type="text" id="username" />
-     <input type="submit" value="Generate Key and submit to server" />
- </form>
+<div class="row">
+
+
+
+  <div class="col-lg-4">
+      <h1><i class="fas fa-key"></i> Wireguard Keygen</h1>
+    <p>The username can contain a maximum of 40 alphanumeric characters.</p>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">@</span>
+      </div>
+      <input type="text" class="form-control" id="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+      <span class="input-group-btn">
+        <button class="btn btn-primary"  onclick="javascript:submitToServer(this)" type="button">Generate Key & Submit</button>
+      </span>
+    </div>
+    <br />
+    <p>After entering the username and pressing the button, you will be automatically getting a .conf file to download.</p>
+  </div>
+
+
+  <div class="col-md-4">
+  <h1><i class="fas fa-info"></i> Introduction</h1>
+  <p>This is the web-based wireguard key generator. It will help you to generate
+    your keypair (the private and public key) and automatically add your public
+    key to the registration server.
+  </p>
+
+  <p><b>Please note:</b> Depending on your OS, Browser etc. the generation of
+   random numbers, which are required to generate the private key, the resulting
+   keys might be unsafe to use.<br/>
+   <br />
+   <b>If you can, use the script <i>client/register.sh</i>,
+     which is supplied with wg-web instead</b>
+  </b>
+
+
+</div>
+
+
+
+  </div>
+
+
+</div>
+
 
   <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 
@@ -78,6 +112,4 @@ function submitToServer(sender)
 
 }
 </script>
-
-</body>
-</html>
+{% endblock %}

@@ -1,21 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>jQuery.ajax()</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-</head>
-<body class="col-md-12">
   <h1>Wireguard Peer List</h1>
   <div id="display-resources">
     <p>Click the refresh button to load the current peer lists and to be able to set trust.</p>
   </div>
   <a href="#" class="btn btn-primary" id="retrieve-resources">Update Peer List</a>
-  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
   <script>
-
-
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
     t.setSeconds(secs);
@@ -108,6 +101,4 @@
   });
 
   </script>
-
-</body>
-</html>
+{% endblock %}
