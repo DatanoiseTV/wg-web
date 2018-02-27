@@ -36,6 +36,18 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 auth = HTTPBasicAuth()
 
+from wtforms import Form, BooleanField, StringField, PasswordField, validators
+
+class RegistrationForm(Form):
+    username = StringField('Username', [validators.Length(min=4, max=25)])
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
+
+
 limiter = Limiter(
     app,
     key_func=get_remote_address,
@@ -248,6 +260,17 @@ def peer_delete(key):
     return peer_schema.jsonify(peer)
 
 ######## Routes for User handling ########
+
+@app.route('/register', methods=['GET'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(form.username.data, form.email.data,
+                    form.password.data)
+        db_session.add(user)
+        flash('Thanks for registering')
+        return redirect(url_for('login'))
+    return render_template('user_register.html', form=form)
 
 # Creates an user which is inactive until activated
 @app.route('/api/users', methods=['POST'])
