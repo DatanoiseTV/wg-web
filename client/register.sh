@@ -45,7 +45,10 @@ dec2ip () {
     printf '%s\n' "$ip"
 }
 
-read -p "[?] Please enter a username to identify you in the future: " -r USERNAME
+read -p "[?] Please choose an username / peer name to identify you in the future: " -r USERNAME
+
+read -p "[?] Enter your API User: " -r APIUSER
+read -p "[?] Enter your API Password: " -r APIPASS
 
 shopt -s nocasematch
 CONFIGURATION_FILE="/etc/wireguard/wireguard-web.conf"
@@ -65,7 +68,7 @@ if [[ -z $PRIVATE_KEY ]]; then
 fi
 
 if [[ -z $SERVER_URL ]]; then
-  SERVER_URL=https://netvm.inetgrid.net
+  SERVER_URL=https://$APIUSER:$APIPASS@netvm.inetgrid.net
 fi
 
 echo "[+] Contacting Server API."
