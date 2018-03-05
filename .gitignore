@@ -1,0 +1,8 @@
+.DS_Store
+*.pyc
+*.sqlite
+*.swp
+venv/bin
+venv/lib
+venv/include
+__pycache__
