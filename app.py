@@ -157,14 +157,13 @@ def add_user():
 def initdb():
     db.create_all()
 
-
 ######## Helper functions ########
 def StatusResponse(statuscode, msg):
     return "{\n  'status': %d,\n  'text': '%s'\n}" %(statuscode, msg)
 
 # Generate IPv4 from PK in /16 universe
 def IDtoIP(id):
-    return int(ipaddress.IPv4Address("10.42.%s.%s" %(divmod(id, 255)[0], id & 255)))
+    return int(ipaddress.IPv4Address("10.78.%s.%s" %(divmod(id, 255)[0], id & 255))+1)
 
 # Generate IPv6 address from Public Keygen
 def pubkey_to_ipv6_linklocal(pubkey):
@@ -176,6 +175,15 @@ def pubkey_to_ipv6_linklocal(pubkey):
     low2 = pubkey_value & 0xffff
 
     return 'fe80::{:04x}:{:02x}ff:fe{:02x}:{:04x}'.format(high2, high1, low1, low2)
+
+@app.template_filter('int2ip')
+def int2ip_filter(ipnum):
+    o1 = int(ipnum / 16777216) % 256
+    o2 = int(ipnum / 65536) % 256
+    o3 = int(ipnum / 256) % 256
+    o4 = int(ipnum) % 256
+    return '%(o1)s.%(o2)s.%(o3)s.%(o4)s' % locals()
+app.jinja_env.filters['int2ip'] = int2ip_filter
 
 # TBD (limit num peers per user)
 def AllowedToAddPeer(username):

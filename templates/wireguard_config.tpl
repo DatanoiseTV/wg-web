@@ -3,4 +3,5 @@
 # {{ peer.username }}
 [Peer]
 PublicKey = {{ peer.pubkey }}
+AllowedIPs = {{ peer.ip_address|int2ip }}{% if peer.ipv6_address %}, {{ peer.ipv6_address }}{% endif %}
 {% endif %}{% endfor %}
