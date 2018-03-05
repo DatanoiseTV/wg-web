@@ -32,10 +32,10 @@
     key to the registration server.
   </p>
 
-  <p><b>Please note:</b> Depending on your OS, Browser etc. the generation of
+  <!--<p><b>Please note:</b> Depending on your OS, Browser etc. the generation of
    random numbers, which are required to generate the private key, the resulting
    keys might be unsafe to use.<br/>
-   <br />
+   <br /> -->
    <b>If you can, use the script <i>client/register.sh</i>,
      which is supplied with wg-web instead</b>
   </b>
@@ -73,7 +73,6 @@
 function submitToServer(sender)
 {
 	let keypair = WireGuard.generateKeypair();
-	//var serverResponse = sendPubkeyToServer(keypair.publicKey, "zx2c4", "supersecretpassword");
 
   $.ajax({
     type: 'POST',
@@ -89,7 +88,7 @@ function submitToServer(sender)
       var config = [];
     	config.push("[Interface]");
     	config.push("PrivateKey = " + keypair.privateKey);
-    	config.push("Address = " + num2dot(result.ip_address));
+    	config.push("Address = " + num2dot(result.ip_address) + ", " + result.ipv6_address);
     	//config.push("DNS = " + serverResponse.dns.join(", "));
     	config.push("");
     	config.push("[Peer]");

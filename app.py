@@ -18,6 +18,8 @@ import ipaddress
 import datetime, time
 from passlib.hash import argon2
 
+import base64
+import binascii
 
 app = Flask(__name__)
 
@@ -98,15 +100,17 @@ class Peer(db.Model):
     pubkey = db.Column(db.String(45), unique=True)
     date_created = db.Column(db.Integer)
     ip_address = db.Column(db.Integer)
+    ipv6_address = db.Column(db.String(100))
     reg_ip_address = db.Column(db.Integer)
     is_trusted = db.Column(db.Boolean())
 
     created_by = db.Column(db.String(80))
 
-    def __init__(self, username, pubkey, reg_ip_address, created_by):
+    def __init__(self, username, pubkey, reg_ip_address, ipv6_address, created_by):
         self.username = username
         self.pubkey = pubkey
         self.reg_ip_address = reg_ip_address
+        self.ipv6_address = ipv6_address
         self.is_trusted = False
         self.created_by = created_by
         self.date_created = int(time.mktime(datetime.datetime.now().timetuple()))
@@ -115,7 +119,7 @@ class Peer(db.Model):
 class PeerSchema(ma.ModelSchema):
     class Meta:
         model = Peer
-        fields = ( 'username', 'pubkey', 'ip_address',\
+        fields = ( 'username', 'pubkey', 'ip_address', 'ipv6_address',\
                    'reg_ip_address', 'is_trusted', 'date_created'\
                  )
 
@@ -148,13 +152,30 @@ def add_user():
     print("Thanks, successfully added '%s' to users." %(username))
     sys.exit(0)
 
+# Create database schemas
+@app.cli.command()
+def initdb():
+    db.create_all()
+
+
 ######## Helper functions ########
 def StatusResponse(statuscode, msg):
     return "{\n  'status': %d,\n  'text': '%s'\n}" %(statuscode, msg)
 
-# Generate IP from PK in /16 universe
+# Generate IPv4 from PK in /16 universe
 def IDtoIP(id):
     return int(ipaddress.IPv4Address("10.42.%s.%s" %(divmod(id, 255)[0], id & 255)))
+
+# Generate IPv6 address from Public Keygen
+def pubkey_to_ipv6_linklocal(pubkey):
+    # Python 2: pubkey_value = int(base64.b64decode(pubkey).encode('hex'), 16)
+    pubkey_value = int.from_bytes(base64.b64decode(pubkey), 'big')
+    high2 = pubkey_value >> 32 & 0xffff ^ 0x0200
+    high1 = pubkey_value >> 24 & 0xff
+    low1 = pubkey_value >> 16 & 0xff
+    low2 = pubkey_value & 0xffff
+
+    return 'fe80::{:04x}:{:02x}ff:fe{:02x}:{:04x}'.format(high2, high1, low1, low2)
 
 # TBD (limit num peers per user)
 def AllowedToAddPeer(username):
@@ -170,7 +191,8 @@ def add_peer():
     pubkey = request.json['pubkey']
     reg_ip_address = int(ipaddress.IPv4Address(str(request.remote_addr)))
     created_by = auth.username()
-    new_peer = Peer(username, pubkey, reg_ip_address, created_by)
+    ipv6_address = str(pubkey_to_ipv6_linklocal(pubkey))
+    new_peer = Peer(username, pubkey, reg_ip_address, ipv6_address, created_by)
 
     if(not re.match("[a-zA-Z0-9+/]{43}=", pubkey)):
         return StatusResponse(100, "Not a valid key")
