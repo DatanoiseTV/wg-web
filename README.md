@@ -21,7 +21,7 @@ as it might end up in data loss or worse. This is provided without any warranty.
 * Enter venv ```python3 -mvenv venv && source venv/bin/activate```
 * Install requirements ```pip install -r requirements.txt```
 * Enter interactive shell ```FLASK_APP=app.py flask shell```
-* Enter ```from app import db; db.create_all()```
+* Enter ```FLASK_APP=app.py flask initdb```
 * Exit interactive shell with Ctrl+D
 * Run app by typing ```python3 app.py``` or ```FLASK_APP=app.py run```
 * Be sure to use a reverse proxy (like nginx) for exposing to public
