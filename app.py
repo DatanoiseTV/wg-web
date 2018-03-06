@@ -248,7 +248,7 @@ def add_peer():
     new_peer.ip_address = IDtoIP(int(new_peer.id))
     db.session.commit()
 
-    notify_wireguard.delay("add", peer_schema.jsonify(new_peer))
+    #notify_wireguard.delay("add", peer_schema.jsonify(new_peer))
 
     return peer_schema.jsonify(new_peer)
 
@@ -307,7 +307,7 @@ def peer_update(key):
 
     db.session.commit()
 
-    notify_wireguard.delay("update", peer_schema.jsonify(peer))
+    #notify_wireguard.delay("update", peer_schema.jsonify(peer))
     return peer_schema.jsonify(peer)
 
 # endpoint to delete peer
@@ -317,7 +317,7 @@ def peer_delete(key):
     peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
     db.session.delete(peer)
     db.session.commit()
-    notify_wireguard.delay("delete", peer_schema.jsonify(peer))
+    #notify_wireguard.delay("delete", peer_schema.jsonify(peer))
     return peer_schema.jsonify(peer)
 
 ######## Routes for User handling ########
