@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
-  <div id="display-resources">
-    <p></p>
-  </div>
+<div id="display-resources">
+  <p></p>
+</div>
 
 <div class="row">
 
-
-
   <div class="col-lg-7">
-      <h1><i class="fas fa-key"></i> Wireguard Keygen</h1>
+    <h1><i class="fas fa-key"></i> Wireguard Keygen</h1>
     <p>The username can contain a maximum of 40 alphanumeric characters.</p>
     <div class="input-group">
       <div class="input-group-prepend">
@@ -26,53 +24,50 @@
 
 
   <div class="col-md-4">
-  <h1><i class="fas fa-info"></i> Introduction</h1>
-  <p>This is the web-based wireguard key generator. It will help you to generate
-    your keypair (the private and public key) and automatically add your public
-    key to the registration server.
-  </p>
+    <h1><i class="fas fa-info"></i> Introduction</h1>
+    <p>This is the web-based wireguard key generator. It will help you to generate
+      your keypair (the private and public key) and automatically add your public
+      key to the registration server.
+    </p>
 
-  <!--<p><b>Please note:</b> Depending on your OS, Browser etc. the generation of
-   random numbers, which are required to generate the private key, the resulting
-   keys might be unsafe to use.<br/>
-   <br /> -->
-   <b>If you can, use the script <i>client/register.sh</i>,
-     which is supplied with wg-web instead</b>
-  </b>
-
-
-</div>
-
+    <!--<p><b>Please note:</b> Depending on your OS, Browser etc. the generation of
+    random numbers, which are required to generate the private key, the resulting
+    keys might be unsafe to use.<br/>
+    <br /> -->
+    <b>If you can, use the script <i>client/register.sh</i>,
+      which is supplied with wg-web instead</b>
+    </b>
 
 
   </div>
 
+</div>
 
 </div>
 
 
-  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 
-<script src="/static/js/wireguard.js"></script>
+<script src="/static/js/wireguard-min.js"></script>
 <script>
 /* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
- function num2dot(num)
- {
-   var d = num%256;
-   for (var i = 3; i > 0; i--)
-   {
-     num = Math.floor(num/256);
-     d = num%256 + '.' + d;
-   }
-   return d;
- }
+*
+* Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+*/
+function num2dot(num)
+{
+  var d = num%256;
+  for (var i = 3; i > 0; i--)
+  {
+    num = Math.floor(num/256);
+    d = num%256 + '.' + d;
+  }
+  return d;
+}
 
 function submitToServer(sender)
 {
-	let keypair = WireGuard.generateKeypair();
+  let keypair = WireGuard.generateKeypair();
 
   $.ajax({
     type: 'POST',
@@ -86,26 +81,26 @@ function submitToServer(sender)
       //var returnedData = JSON.parse(result);
       console.log("Submission successful. Private key = " + keypair.privateKey)
       var config = [];
-    	config.push("[Interface]");
-    	config.push("PrivateKey = " + keypair.privateKey);
-    	config.push("Address = " + num2dot(result.ip_address) + ", " + result.ipv6_address);
-    	//config.push("DNS = " + serverResponse.dns.join(", "));
-    	config.push("");
-    	config.push("[Peer]");
-    	config.push("PublicKey = " + "{{ config.WIREGUARD_SERVER_PUBKEY }}");
-    	config.push("Endpoint = " + "{{ config.WIREGUARD_SERVER_IP }}:{{ config.WIREGUARD_SERVER_PORT }}");
-    	config.push("");
+      config.push("[Interface]");
+      config.push("PrivateKey = " + keypair.privateKey);
+      config.push("Address = " + num2dot(result.ip_address) + ", " + result.ipv6_address);
+      //config.push("DNS = " + serverResponse.dns.join(", "));
+      config.push("");
+      config.push("[Peer]");
+      config.push("PublicKey = " + "{{ config.WIREGUARD_SERVER_PUBKEY }}");
+      config.push("Endpoint = " + "{{ config.WIREGUARD_SERVER_IP }}:{{ config.WIREGUARD_SERVER_PORT }}");
+      config.push("");
 
-    	config = config.join("\n");
+      config = config.join("\n");
 
-    	var blob = new Blob([config], { type: "text/plain" });
-    	var a = document.createElement("a");
-    	a.download = "wireguard-web.conf";
-    	a.href = URL.createObjectURL(blob);
-    	a.style.display = "none";
-    	document.body.appendChild(a);
-    	a.click();
-    	document.body.removeChild(a);
+      var blob = new Blob([config], { type: "text/plain" });
+      var a = document.createElement("a");
+      a.download = "wireguard-web.conf";
+      a.href = URL.createObjectURL(blob);
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   });
 
