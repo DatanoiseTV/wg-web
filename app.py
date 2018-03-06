@@ -50,6 +50,10 @@ def make_celery(app):
 
 celery = make_celery(app)
 
+@celery.task()
+def notify_wireguard(action, parameters):
+    return 42
+
 ###### USER SETTINGS ######
 app.config['API_SERVER_URL'] = 'https://netvm.inetgrid.net'
 app.config['WIREGUARD_SERVER_IP'] = '159.89.111.118'
@@ -244,6 +248,8 @@ def add_peer():
     new_peer.ip_address = IDtoIP(int(new_peer.id))
     db.session.commit()
 
+    notify_wireguard.delay("add", peer_schema.jsonify(new_peer))
+
     return peer_schema.jsonify(new_peer)
 
 # Add peer using keygen in browser
@@ -300,15 +306,18 @@ def peer_update(key):
     peer.is_trusted = is_trusted
 
     db.session.commit()
+
+    notify_wireguard.delay("update", peer_schema.jsonify(peer))
     return peer_schema.jsonify(peer)
 
-# endpoint to update peer trust
+# endpoint to delete peer
 @app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
 @auth.login_required
 def peer_delete(key):
     peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
     db.session.delete(peer)
     db.session.commit()
+    notify_wireguard.delay("delete", peer_schema.jsonify(peer))
     return peer_schema.jsonify(peer)
 
 ######## Routes for User handling ########
