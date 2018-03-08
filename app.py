@@ -191,7 +191,7 @@ def StatusResponse(statuscode, msg):
 def IDtoIP(id):
     return int(ipaddress.IPv4Address("10.78.%s.%s" %(divmod(id, 255)[0], id & 255))+1)
 
-# Generate IPv6 address from Public Keygen
+# Generate IPv6 address in /64 subnet from Public Key
 def pubkey_to_ipv6_linklocal(pubkey):
     # Python 2: pubkey_value = int(base64.b64decode(pubkey).encode('hex'), 16)
     pubkey_value = int.from_bytes(base64.b64decode(pubkey), 'big')
@@ -200,7 +200,7 @@ def pubkey_to_ipv6_linklocal(pubkey):
     low1 = pubkey_value >> 16 & 0xff
     low2 = pubkey_value & 0xffff
 
-    return 'fe80::{:04x}:{:02x}ff:fe{:02x}:{:04x}'.format(high2, high1, low1, low2)
+    return 'fe80::{:04x}:{:02x}ff:fe{:02x}:{:04x}/64'.format(high2, high1, low1, low2)
 
 @app.template_filter('int2ip')
 def int2ip_filter(ipnum):
