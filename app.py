@@ -59,6 +59,7 @@ app.config['API_SERVER_URL'] = 'https://netvm.inetgrid.net'
 app.config['WIREGUARD_SERVER_IP'] = '159.89.111.118'
 app.config['WIREGUARD_SERVER_PORT'] = 500
 app.config['WIREGUARD_SERVER_PUBKEY'] = 'fJy6mFqLtRwtRD1dy2GxuYROPIy73mmE5kxzyT3ATDw='
+app.config['IPV6_ULA_PREFIX'] = '2ef0:3cf0'
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -191,16 +192,17 @@ def StatusResponse(statuscode, msg):
 def IDtoIP(id):
     return int(ipaddress.IPv4Address("10.78.%s.%s" %(divmod(id, 255)[0], id & 255))+1)
 
-# Generate IPv6 address in /64 subnet from Public Key
+# Generate IPv6 address in /48 ULA subnet from Public Key
+# See: https://dn42.net/FAQ#frequently-asked-questions_what-about-ipv6-in-dn42
 def pubkey_to_ipv6_linklocal(pubkey):
     # Python 2: pubkey_value = int(base64.b64decode(pubkey).encode('hex'), 16)
     pubkey_value = int.from_bytes(base64.b64decode(pubkey), 'big')
     high2 = pubkey_value >> 32 & 0xffff ^ 0x0200
-    high1 = pubkey_value >> 24 & 0xff
+    high1 = pubkey_value >> 24 & 0xffff
     low1 = pubkey_value >> 16 & 0xff
     low2 = pubkey_value & 0xffff
 
-    return 'fe80::{:04x}:{:02x}ff:fe{:02x}:{:04x}/64'.format(high2, high1, low1, low2)
+    return 'fd00:{:04x}::{:04x}:{:04x}:fe{:02x}:{:04x}/48'.format(app.config['IPV6_ULA_PREFIX'], high2, high1, low1, low2)
 
 @app.template_filter('int2ip')
 def int2ip_filter(ipnum):
