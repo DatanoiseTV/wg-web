@@ -202,7 +202,7 @@ def pubkey_to_ipv6_linklocal(pubkey):
     low1 = pubkey_value >> 16 & 0xff
     low2 = pubkey_value & 0xffff
 
-    return 'fd00:{:04x}::{:04x}:{:04x}:fe{:02x}:{:04x}/48'.format(app.config['IPV6_ULA_PREFIX'], high2, high1, low1, low2)
+    return 'fd00:{}::{:04x}:{:04x}:fe{:02x}:{:04x}/48'.format(app.config['IPV6_ULA_PREFIX'], high2, high1, low1, low2)
 
 @app.template_filter('int2ip')
 def int2ip_filter(ipnum):
