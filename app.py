@@ -217,7 +217,7 @@ def AllowedToAddPeer(username):
 
 ######## Routes for Peer CRUD API ########
 # endpoint to add new peer
-@app.route("/peer", methods=["POST"])
+@app.route("/api/peer", methods=["POST"])
 @auth.login_required
 @limiter.limit("30 per hour")
 def add_peer():
@@ -253,14 +253,14 @@ def add_peer():
     return peer_schema.jsonify(new_peer)
 
 # Add peer using keygen in browser
-@app.route("/peer/keygen", methods=["GET"])
+@app.route("/api/peer/keygen", methods=["GET"])
 def add_peer_keygen():
     resp = make_response(render_template('peer_keygen.html'))
     resp.headers['Content-type'] = 'text/html; charset=utf-8'
     return resp
 
 # Generated config for Wireguard
-@app.route("/peers/config", methods=["GET"])
+@app.route("/api/peers/config", methods=["GET"])
 @auth.login_required
 def get_peer_config():
     all_peers = Peer.query.all()
@@ -270,7 +270,7 @@ def get_peer_config():
     return resp
 
 # Show all peers of logged in user as JSON response
-@app.route("/peers", methods=["GET"])
+@app.route("/api/peers", methods=["GET"])
 @auth.login_required
 def get_peer():
     all_peers = Peer.query.filter_by(created_by=auth.username())
@@ -278,7 +278,7 @@ def get_peer():
     return jsonify(result)
 
 # Show all peers pretty
-@app.route("/peers/pretty", methods=["GET"])
+@app.route("/api/peers/pretty", methods=["GET"])
 @auth.login_required
 def get_peer_pretty():
     all_peers = Peer.query.filter_by(created_by=auth.username())
@@ -288,7 +288,7 @@ def get_peer_pretty():
     return resp
 
 # endpoint to get peer detail by pubkey
-@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>', methods=["GET"])
+@app.route('/api/peer/<regex("[a-zA-Z0-9+/]{43}="):key>', methods=["GET"])
 @auth.login_required
 def peer_detail_pubkey(key):
     print (key)
@@ -296,7 +296,7 @@ def peer_detail_pubkey(key):
     return peer_schema.jsonify(peer)
 
 # endpoint to update peer trust
-@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/trust', methods=["POST"])
+@app.route('/api/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/trust', methods=["POST"])
 @auth.login_required
 def peer_update(key):
     peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()
@@ -311,7 +311,7 @@ def peer_update(key):
     return peer_schema.jsonify(peer)
 
 # endpoint to delete peer
-@app.route('/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
+@app.route('/api/peer/<regex("[a-zA-Z0-9+/]{43}="):key>/delete', methods=["POST"])
 @auth.login_required
 def peer_delete(key):
     peer = Peer.query.filter_by(pubkey=key, created_by=auth.username()).first_or_404()

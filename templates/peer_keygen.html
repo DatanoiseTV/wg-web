@@ -74,7 +74,7 @@ function submitToServer(sender)
     data: JSON.stringify({ "pubkey": keypair.publicKey, "username": document.getElementById("username").value}),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
-    url: "/peer",
+    url: "/api/peer",
     success: function(result)
     {
       console.log(result);

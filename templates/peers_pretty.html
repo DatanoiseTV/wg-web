@@ -51,7 +51,7 @@
       type: 'POST',
       contentType: "application/json; charset=utf-8",
       dataType: "json",
-      url: "/peer/"+ pubkey +"/delete",
+      url: "/api/peer/"+ pubkey +"/delete",
       success: function(result)
       {
         updateList();
@@ -67,7 +67,7 @@
 
     $.ajax({
       type: "GET",
-      url: "/peers",
+      url: "/api/peers",
       success: function(result)
       {
         console.log(result);
